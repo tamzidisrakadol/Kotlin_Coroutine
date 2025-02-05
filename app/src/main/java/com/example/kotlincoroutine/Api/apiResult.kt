@@ -1,13 +1,15 @@
 package com.example.kotlincoroutine.Api
 
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.withContext
 import retrofit2.Response
 
-fun <T> ApiResult(call:suspend ()-> Response<T>):Flow<Pair<Int, ApiResponse<T?>>> = flow {
+fun <T> apiResult(call:suspend ()-> Response<T>):Flow<Pair<Int, ApiResponse<T?>>> = flow {
     emit(0 to ApiResponse.Loading)
     try {
-        val c = call()
+        val c = withContext(Dispatchers.IO) { call() }
         c.let {
             if (c.isSuccessful){
                 emit(c.code() to ApiResponse.Success(it.body()))
