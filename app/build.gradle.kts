@@ -60,6 +60,11 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
+    //ktx
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.7") //collectAsStateWithLifeCycle
+    implementation("androidx.compose.runtime:runtime-livedata:1.7.7") //observeAsState
+
+
     //coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.9")
 
