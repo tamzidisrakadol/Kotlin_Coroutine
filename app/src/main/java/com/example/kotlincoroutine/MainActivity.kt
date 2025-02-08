@@ -1,7 +1,9 @@
 package com.example.kotlincoroutine
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -29,28 +31,66 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.lifecycleScope
 import com.example.kotlincoroutine.ViewModel.UserViewModel
 import com.example.kotlincoroutine.ui.theme.KotlinCoroutineTheme
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.CoroutineName
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    private val TAG = "adol"
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             KotlinCoroutineTheme {
-                val userViewModel = hiltViewModel<UserViewModel>()
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    CheckLifeCycle(userViewModel = userViewModel, modifier = Modifier.padding(innerPadding))
+                    exceptionHandlingUsingLaunch()
+                    CheckLifeCycle(modifier = Modifier.padding(innerPadding))
                 }
             }
         }
     }
+
+    //exception handling
+    //launch -> launch return a job object. in other words it work like fire and forgot. In terms of exception handling launch cannot handle exception it crashes the application
+    //async -> async return a deferred object. in other words it work like async await. In terms of exception handling async can handle exception it silently catch the application
+
+   //This is a better way to catch exception using launch
+    private fun exceptionHandlingUsingLaunch() {
+        //CoroutineExceptionHandler
+        val handler = CoroutineExceptionHandler{context,thorwable->
+            Log.d(TAG,"${thorwable.message}")
+        }
+
+        lifecycleScope.launch(Dispatchers.IO + handler){
+            launch{
+                delay(2000)
+                Log.d(TAG,"${Thread.currentThread().name}")
+                throw Exception("Error occured")
+            }
+        }
+    }
+
+
+
+
+
+
+
+
 }
 
 @Composable
-fun CheckLifeCycle(modifier: Modifier = Modifier,userViewModel: UserViewModel) {
+fun CheckLifeCycle(modifier: Modifier = Modifier,userViewModel: UserViewModel=hiltViewModel()) {
     val isAddLoaded = userViewModel.isAdLoaded.collectAsState()
     val isFlowAdLoaded = userViewModel.isFlowAdLoaded.collectAsState()
     val checkIntData = userViewModel.checkIntData.collectAsState()
