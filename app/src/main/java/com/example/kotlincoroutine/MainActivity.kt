@@ -110,15 +110,7 @@ class MainActivity : ComponentActivity() {
 
         }
 
-
     }
-
-
-
-
-
-
-
 
 }
 
