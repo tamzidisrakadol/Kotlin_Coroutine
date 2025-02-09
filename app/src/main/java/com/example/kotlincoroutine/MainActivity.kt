@@ -40,6 +40,7 @@ import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.job
 import kotlinx.coroutines.launch
@@ -55,7 +56,6 @@ class MainActivity : ComponentActivity() {
         setContent {
             KotlinCoroutineTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    exceptionHandlingUsingCustomCoroutineScope()
                     CheckLifeCycle(modifier = Modifier.padding(innerPadding))
                 }
             }
@@ -87,7 +87,12 @@ class MainActivity : ComponentActivity() {
         val handler = CoroutineExceptionHandler{context,thorwable->
             Log.d(TAG,"${thorwable.message}")
         }
+
+        //custom coroutineScope without Supervisor Job
         val customCoroutine = CoroutineScope(Dispatchers.IO + handler + CoroutineName("CustomCoroutine"))
+
+        //custom coroutineScope with Supervisor Job
+        val customCoroutine2 = CoroutineScope(Dispatchers.IO + handler + SupervisorJob() + CoroutineName("CustomCoroutine2"))
 
         customCoroutine.launch{
             //if we don't use supervisorScope then all  child coroutine and parent coroutine will get cancelled
