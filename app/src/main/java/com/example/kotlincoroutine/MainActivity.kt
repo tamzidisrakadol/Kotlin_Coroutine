@@ -41,7 +41,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.job
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.supervisorScope
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -53,7 +55,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             KotlinCoroutineTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    exceptionHandlingUsingLaunch()
+                    exceptionHandlingUsingCustomCoroutineScope()
                     CheckLifeCycle(modifier = Modifier.padding(innerPadding))
                 }
             }
@@ -75,9 +77,35 @@ class MainActivity : ComponentActivity() {
             launch{
                 delay(2000)
                 Log.d(TAG,"${Thread.currentThread().name}")
-                throw Exception("Error occured")
+                throw Exception("Error occurred")
             }
         }
+    }
+
+    //handling exception using custom coroutine scope
+    private fun exceptionHandlingUsingCustomCoroutineScope() {
+        val handler = CoroutineExceptionHandler{context,thorwable->
+            Log.d(TAG,"${thorwable.message}")
+        }
+        val customCoroutine = CoroutineScope(Dispatchers.IO + handler + CoroutineName("CustomCoroutine"))
+
+        customCoroutine.launch{
+            //if we don't use supervisorScope then all  child coroutine and parent coroutine will get cancelled
+            supervisorScope {  //child coroutine 1
+                launch{
+                    delay(2000)
+                    Log.d(TAG,"${Thread.currentThread().name}")
+                    throw Exception("Error occurred")
+                }.join()
+                //child coroutine 2
+                launch{
+                    delay(2000)
+                    Log.d(TAG,"${Thread.currentThread().name}")
+                } }
+
+        }
+
+
     }
 
 
