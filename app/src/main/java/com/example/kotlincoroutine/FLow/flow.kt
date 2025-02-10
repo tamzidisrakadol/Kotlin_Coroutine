@@ -16,7 +16,6 @@ import kotlinx.coroutines.runBlocking
 
 * */
 fun main() {
-
     runBlocking {
         //consumer
         userStream()

@@ -1,7 +1,6 @@
 package com.example.kotlincoroutine
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -32,6 +31,8 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
+import com.example.kotlincoroutine.Modal.ProductUiState
+import com.example.kotlincoroutine.ViewModel.ProductViewModel
 import com.example.kotlincoroutine.ViewModel.UserViewModel
 import com.example.kotlincoroutine.ui.theme.KotlinCoroutineTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -39,10 +40,8 @@ import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
 
@@ -66,17 +65,17 @@ class MainActivity : ComponentActivity() {
     //launch -> launch return a job object. in other words it work like fire and forgot. In terms of exception handling launch cannot handle exception it crashes the application
     //async -> async return a deferred object. in other words it work like async await. In terms of exception handling async can handle exception it silently catch the application
 
-   //This is a better way to catch exception using launch
+    //This is a better way to catch exception using launch
     private fun exceptionHandlingUsingLaunch() {
         //CoroutineExceptionHandler
-        val handler = CoroutineExceptionHandler{context,thorwable->
-            Log.d(TAG,"${thorwable.message}")
+        val handler = CoroutineExceptionHandler { context, thorwable ->
+            Log.d(TAG, "${thorwable.message}")
         }
 
-        lifecycleScope.launch(Dispatchers.IO + handler){
-            launch{
+        lifecycleScope.launch(Dispatchers.IO + handler) {
+            launch {
                 delay(2000)
-                Log.d(TAG,"${Thread.currentThread().name}")
+                Log.d(TAG, "${Thread.currentThread().name}")
                 throw Exception("Error occurred")
             }
         }
@@ -84,29 +83,32 @@ class MainActivity : ComponentActivity() {
 
     //handling exception using custom coroutine scope
     private fun exceptionHandlingUsingCustomCoroutineScope() {
-        val handler = CoroutineExceptionHandler{context,thorwable->
-            Log.d(TAG,"${thorwable.message}")
+        val handler = CoroutineExceptionHandler { context, thorwable ->
+            Log.d(TAG, "${thorwable.message}")
         }
 
         //custom coroutineScope without Supervisor Job
-        val customCoroutine = CoroutineScope(Dispatchers.IO + handler + CoroutineName("CustomCoroutine"))
+        val customCoroutine =
+            CoroutineScope(Dispatchers.IO + handler + CoroutineName("CustomCoroutine"))
 
         //custom coroutineScope with Supervisor Job
-        val customCoroutine2 = CoroutineScope(Dispatchers.IO + handler + SupervisorJob() + CoroutineName("CustomCoroutine2"))
+        val customCoroutine2 =
+            CoroutineScope(Dispatchers.IO + handler + SupervisorJob() + CoroutineName("CustomCoroutine2"))
 
-        customCoroutine.launch{
+        customCoroutine.launch {
             //if we don't use supervisorScope then all  child coroutine and parent coroutine will get cancelled
             supervisorScope {  //child coroutine 1
-                launch{
+                launch {
                     delay(2000)
-                    Log.d(TAG,"${Thread.currentThread().name}")
+                    Log.d(TAG, "${Thread.currentThread().name}")
                     throw Exception("Error occurred")
                 }.join()
                 //child coroutine 2
-                launch{
+                launch {
                     delay(2000)
-                    Log.d(TAG,"${Thread.currentThread().name}")
-                } }
+                    Log.d(TAG, "${Thread.currentThread().name}")
+                }
+            }
 
         }
 
@@ -115,7 +117,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun CheckLifeCycle(modifier: Modifier = Modifier,userViewModel: UserViewModel=hiltViewModel()) {
+fun CheckLifeCycle(modifier: Modifier = Modifier, userViewModel: UserViewModel = hiltViewModel()) {
     val isAddLoaded = userViewModel.isAdLoaded.collectAsState()
     val isFlowAdLoaded = userViewModel.isFlowAdLoaded.collectAsState()
     val checkIntData = userViewModel.checkIntData.collectAsState()
@@ -126,17 +128,20 @@ fun CheckLifeCycle(modifier: Modifier = Modifier,userViewModel: UserViewModel=hi
     ) {
         Text(text = "check Ad : ${isAddLoaded.value}", color = Color.White, fontSize = 20.sp)
         Spacer(modifier = modifier.height(30.dp))
-        Text(text = "check flow Ad : ${isFlowAdLoaded.value}", color = Color.White, fontSize = 20.sp)
+        Text(
+            text = "check flow Ad : ${isFlowAdLoaded.value}",
+            color = Color.White,
+            fontSize = 20.sp
+        )
         Spacer(modifier = modifier.height(20.dp))
         Button(onClick = {
             userViewModel.changeIntData(200)
         }) {
             Text("click me")
         }
-        Text(text ="Int no. ${checkIntData.value}", color = Color.White, fontSize = 20.sp)
+        Text(text = "Int no. ${checkIntData.value}", color = Color.White, fontSize = 20.sp)
     }
 }
-
 
 
 @SuppressLint("StateFlowValueCalledInComposition")
