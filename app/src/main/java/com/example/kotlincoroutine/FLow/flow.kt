@@ -8,6 +8,8 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
@@ -26,7 +28,7 @@ fun main() {
                     it>4
                 }
                 println(list)
-        }
+            }
 
 
         //consumer
@@ -36,6 +38,12 @@ fun main() {
             }
             .filter { //non-terminal operator
                 it > 10
+            }
+            .onStart {//terminal operator
+                emit(33)
+            }
+            .onCompletion {//terminal operator
+                emit(22)
             }
             .collect{ //terminal operator
                 println(it)
