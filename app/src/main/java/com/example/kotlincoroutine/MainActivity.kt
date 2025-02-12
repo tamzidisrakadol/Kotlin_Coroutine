@@ -29,9 +29,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.example.kotlincoroutine.Modal.ProductUiState
+import com.example.kotlincoroutine.ViewModel.MediaRouterViewModel
 import com.example.kotlincoroutine.ViewModel.ProductViewModel
 import com.example.kotlincoroutine.ViewModel.UserViewModel
 import com.example.kotlincoroutine.ui.theme.KotlinCoroutineTheme
@@ -44,6 +46,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {

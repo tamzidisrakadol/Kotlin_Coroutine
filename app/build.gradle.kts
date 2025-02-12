@@ -77,6 +77,19 @@ dependencies {
     implementation ("com.squareup.retrofit2:retrofit:2.11.0")
     implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation ("com.google.code.gson:gson:2.10")
+
+    //casting
+    implementation ("androidx.mediarouter:mediarouter:1.7.0")
+    implementation ("com.google.android.gms:play-services-cast-framework:22.0.0")
+
+
+    //media 3
+    implementation ("androidx.media3:media3-ui:1.5.1")
+    implementation ("androidx.media3:media3-session:1.5.1")
+    implementation("androidx.media3:media3-datasource-okhttp:1.5.1")
+    implementation ("androidx.media3:media3-common:1.5.1")
+    implementation ("androidx.media3:media3-cast:1.5.1")
+    implementation("androidx.legacy:legacy-support-v4:1.0.0")
 }
 
 kapt {
