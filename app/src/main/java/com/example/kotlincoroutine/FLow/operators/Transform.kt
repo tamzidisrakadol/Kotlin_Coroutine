@@ -1,5 +1,6 @@
 package com.example.kotlincoroutine.FLow.operators
 
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -10,11 +11,12 @@ import kotlinx.coroutines.flow.flatMapMerge
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.runBlocking
 import java.lang.System.currentTimeMillis
 
 fun main() {
-    mapLatestExample()
+    transformExample()
 }
 
 private fun concatExample() {
@@ -77,6 +79,27 @@ private fun requestFlow1(i: Int): Flow<String> = flow {
     emit("$i: First")
     delay(1500)
     emit("$i: Second")
+}
+
+private fun transformExample(){
+    /* Using the transform operator, we can emit arbitrary values an arbitrary number of times.*/
+
+
+    runBlocking(Dispatchers.IO){
+        (1..3).asFlow()
+            .transform {intValue->
+                emit("$intValue is emitting")
+                emit(performRequest(intValue))
+            }.collect{response->
+                println(response)
+            }
+    }
+}
+
+
+suspend fun performRequest(request:Int):String{
+    delay(2000)
+    return "response no. $request"
 }
 
 
