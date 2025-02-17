@@ -30,10 +30,25 @@ object DIModule {
             .create(ApiInterface::class.java)
     }
 
+    @Singleton
+    @Provides
+    fun provideProductApiInterface(): ProductApiInterface{
+        return Retrofit.Builder()
+            .baseUrl(Url.PRODUCT_URL)
+            .addConverterFactory(
+                GsonConverterFactory.create(
+                    GsonBuilder().create()
+                )
+            ).build()
+            .create(ProductApiInterface::class. java)
+    }
+
+
+
 
     @Provides
-    fun provideProductRepo(apiInterface: ApiInterface) : ProductRepo{
-        return ProductRepoImpl(apiInterface = apiInterface)
+    fun provideProductRepo(productApiInterface: ProductApiInterface) : ProductRepo{
+        return ProductRepoImpl(productApiInterface=productApiInterface)
     }
 
 

@@ -1,6 +1,7 @@
 package com.example.kotlincoroutine.ViewModel
 
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
@@ -8,6 +9,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.kotlincoroutine.Api.ApiResponse
 import com.example.kotlincoroutine.Modal.Product
+import com.example.kotlincoroutine.Modal.ProductModal
 import com.example.kotlincoroutine.Modal.ProductUiState
 import com.example.kotlincoroutine.Repo.ProductRepo
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -25,8 +27,7 @@ class ProductViewModel @Inject constructor(
     val savedStateHandle: SavedStateHandle
 ) : ViewModel(){
 
-    val productList: StateFlow<ProductUiState<List<Product>>> = savedStateHandle.getStateFlow("testProductList", initialValue = ProductUiState.Loading)
-
+    val productList: StateFlow<ProductUiState<ProductModal>> = savedStateHandle.getStateFlow("testProductList", initialValue = ProductUiState.Loading)
     init {
         fetchProduct()
     }
@@ -44,8 +45,7 @@ class ProductViewModel @Inject constructor(
                         savedStateHandle["testProductList"] = ProductUiState.Loading
                     }
                     is ApiResponse.Success -> {
-                        savedStateHandle["testProductList"] = ProductUiState.Success(data = response.data)
-
+                        savedStateHandle["testProductList"] = response.data
                     }
                 }
             }

@@ -1,5 +1,8 @@
 package com.example.kotlincoroutine.Modal
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+@Parcelize
 data class Product(
     val availabilityStatus: String,
     val brand: String,
@@ -23,4 +26,4 @@ data class Product(
     val title: String,
     val warrantyInformation: String,
     val weight: Int
-)
+) : Parcelable

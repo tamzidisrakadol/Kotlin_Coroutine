@@ -56,6 +56,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
+            val productViewModel = hiltViewModel<ProductViewModel>()
             KotlinCoroutineTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     CheckLifeCycle(modifier = Modifier.padding(innerPadding))
