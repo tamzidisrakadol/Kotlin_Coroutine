@@ -91,6 +91,10 @@ dependencies {
     implementation ("androidx.media3:media3-common:1.5.1")
     implementation ("androidx.media3:media3-cast:1.5.1")
     implementation("androidx.legacy:legacy-support-v4:1.0.0")
+
+    //async
+    implementation("io.coil-kt.coil3:coil-compose:3.1.0")
+    implementation("io.coil-kt.coil3:coil-network-okhttp:3.1.0")
 }
 
 kapt {

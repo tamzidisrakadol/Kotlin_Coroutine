@@ -2,13 +2,10 @@ package com.example.kotlincoroutine.ViewModel
 
 import android.content.Context
 import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.kotlincoroutine.Api.ApiResponse
-import com.example.kotlincoroutine.Modal.Product
 import com.example.kotlincoroutine.Modal.ProductModal
 import com.example.kotlincoroutine.Modal.ProductUiState
 import com.example.kotlincoroutine.Repo.ProductRepo
@@ -27,25 +24,26 @@ class ProductViewModel @Inject constructor(
     val savedStateHandle: SavedStateHandle
 ) : ViewModel(){
 
-    val productList: StateFlow<ProductUiState<ProductModal>> = savedStateHandle.getStateFlow("testProductList", initialValue = ProductUiState.Loading)
+    private val _productUIState: MutableStateFlow<ProductUiState<ProductModal?>> = MutableStateFlow(ProductUiState.Loading)
+    val productUiState = _productUIState.asStateFlow()
+
+
     init {
         fetchProduct()
     }
-
-
 
     private fun fetchProduct(){
         viewModelScope.launch{
             productRepo.showAllProduct().collect{(code, response) ->
                 when(response){
                     is ApiResponse.Failure -> {
-                        savedStateHandle["testProductList"] = ProductUiState.Error(message = response.msg, errorCode = code)
+                        _productUIState.value = ProductUiState.Error(message = response.msg, errorCode = code)
                     }
                     ApiResponse.Loading -> {
-                        savedStateHandle["testProductList"] = ProductUiState.Loading
+                        _productUIState.value = ProductUiState.Loading
                     }
                     is ApiResponse.Success -> {
-                        savedStateHandle["testProductList"] = response.data
+                        _productUIState.value = ProductUiState.Success(data = response.data)
                     }
                 }
             }
