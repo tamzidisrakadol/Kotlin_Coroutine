@@ -34,6 +34,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.example.kotlincoroutine.Modal.ProductUiState
+import com.example.kotlincoroutine.Navigation.AppNavigation
 import com.example.kotlincoroutine.ViewModel.MediaRouterViewModel
 import com.example.kotlincoroutine.ViewModel.ProductViewModel
 import com.example.kotlincoroutine.ViewModel.UserViewModel
@@ -59,7 +60,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             KotlinCoroutineTheme {
                 Scaffold(modifier = Modifier.fillMaxSize().background(Color.White)) { innerPadding ->
-                    ProductScreen(modifier = Modifier.padding(innerPadding))
+                    AppNavigation()
                 }
             }
         }

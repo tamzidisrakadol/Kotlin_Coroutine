@@ -1,5 +1,7 @@
 package com.example.kotlincoroutine.ViewModel
 
+import CheckNetworkConnectivity
+import android.app.Application
 import android.content.Context
 import android.util.Log
 import androidx.lifecycle.SavedStateHandle
@@ -12,8 +14,10 @@ import com.example.kotlincoroutine.Repo.ProductRepo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -21,11 +25,12 @@ import javax.inject.Inject
 class ProductViewModel @Inject constructor(
     val productRepo: ProductRepo,
     @ApplicationContext context: Context,
-    val savedStateHandle: SavedStateHandle
+    val savedStateHandle: SavedStateHandle,
+    val application: Application
 ) : ViewModel(){
 
-    private val _productUIState: MutableStateFlow<ProductUiState<ProductModal?>> = MutableStateFlow(ProductUiState.Loading)
-    val productUiState = _productUIState.asStateFlow()
+    val productModalUiState: StateFlow<ProductUiState<ProductModal>> = savedStateHandle.getStateFlow("productModal", ProductUiState.Loading)
+
 
 
     init {
@@ -37,13 +42,14 @@ class ProductViewModel @Inject constructor(
             productRepo.showAllProduct().collect{(code, response) ->
                 when(response){
                     is ApiResponse.Failure -> {
-                        _productUIState.value = ProductUiState.Error(message = response.msg, errorCode = code)
+                        savedStateHandle["productModal"] = ProductUiState.Error(message = response.msg, errorCode = code)
                     }
                     ApiResponse.Loading -> {
-                        _productUIState.value = ProductUiState.Loading
+                        savedStateHandle["productModal"] = ProductUiState.Loading
                     }
                     is ApiResponse.Success -> {
-                        _productUIState.value = ProductUiState.Success(data = response.data)
+                        savedStateHandle["productModal"] = ProductUiState.Success(data = response.data)
+
                     }
                 }
             }

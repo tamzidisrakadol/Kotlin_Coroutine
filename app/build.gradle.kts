@@ -95,6 +95,10 @@ dependencies {
     //async
     implementation("io.coil-kt.coil3:coil-compose:3.1.0")
     implementation("io.coil-kt.coil3:coil-network-okhttp:3.1.0")
+
+    //navigation
+    implementation("androidx.navigation:navigation-compose:2.8.7")
+    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
 }
 
 kapt {
