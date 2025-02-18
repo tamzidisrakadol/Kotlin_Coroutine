@@ -7,6 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.kotlincoroutine.ProductScreen
+import com.example.kotlincoroutine.SearchScreen
 
 @Composable
 fun AppNavigation(modifier: Modifier = Modifier) {
@@ -14,8 +15,10 @@ fun AppNavigation(modifier: Modifier = Modifier) {
 
     NavHost(navController = navController, startDestination = "productScreen"){
         composable(route = "productScreen"){
-            ProductScreen()
+            ProductScreen(navController = navController)
         }
-
+        composable(route = "searchScreen"){
+            SearchScreen()
+        }
     }
 }

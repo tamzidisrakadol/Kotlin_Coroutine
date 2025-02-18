@@ -3,6 +3,7 @@ package com.example.kotlincoroutine
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -43,6 +44,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 import com.example.kotlincoroutine.Modal.Product
 import com.example.kotlincoroutine.Modal.ProductModal
@@ -53,6 +55,7 @@ import com.example.kotlincoroutine.ViewModel.ProductViewModel
 @Composable
 fun ProductScreen(
     modifier: Modifier = Modifier,
+    navController: NavController,
     productViewModel: ProductViewModel = hiltViewModel(),
     networkViewModel: NetworkViewModel = hiltViewModel()
 ) {
@@ -61,33 +64,39 @@ fun ProductScreen(
 
     when (networkConnectivity.value) {
         true -> {
-            ProductModalUiState(productModalUIState)
+            ProductModalUiState(productModalUIState, onIconClick = {
+                navController.navigate("searchScreen")
+            })
         }
 
         false -> {
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Warning,
-                    modifier = modifier.size(25.dp),
-                    tint = Color.Black,
-                    contentDescription = ""
-                )
-                Text("No Internet Connection", fontSize = 20.sp, color = Color.Black)
-            }
+            NoNetworkScreen()
         }
     }
+}
 
-
+@Composable
+fun NoNetworkScreen(modifier: Modifier= Modifier) {
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Icon(
+            imageVector = Icons.Default.Warning,
+            modifier = modifier.size(25.dp),
+            tint = Color.Black,
+            contentDescription = ""
+        )
+        Text("No Internet Connection", fontSize = 20.sp, color = Color.Black)
+    }
 }
 
 @Composable
 private fun ProductModalUiState(
     productModalUIState: State<ProductUiState<ProductModal>>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onIconClick:()-> Unit
 ) {
     when (val state = productModalUIState.value) {
         is ProductUiState.Error -> {
@@ -116,14 +125,14 @@ private fun ProductModalUiState(
 
         is ProductUiState.Success -> {
             val productData = state.data.products
-            ProductScreenItem(productList = productData)
+            ProductScreenItem(productList = productData, onIconClick = onIconClick)
         }
     }
 }
 
 
 @Composable
-private fun ProductScreenItem(modifier: Modifier = Modifier, productList: List<Product>) {
+private fun ProductScreenItem(modifier: Modifier = Modifier, productList: List<Product>,onIconClick:()-> Unit ) {
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -149,7 +158,10 @@ private fun ProductScreenItem(modifier: Modifier = Modifier, productList: List<P
                 Icon(
                     imageVector = Icons.Default.Search,
                     tint = Color.Black,
-                    contentDescription = ""
+                    contentDescription = "",
+                    modifier = modifier.clickable{
+                        onIconClick()
+                    }
                 )
             }
         }
