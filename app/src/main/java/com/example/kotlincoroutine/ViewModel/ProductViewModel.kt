@@ -4,6 +4,8 @@ import CheckNetworkConnectivity
 import android.app.Application
 import android.content.Context
 import android.util.Log
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -19,6 +21,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -42,16 +45,16 @@ class ProductViewModel @Inject constructor(
     private val _searchText: MutableStateFlow<String> = MutableStateFlow<String>("")
     val searchText = _searchText.asStateFlow()
 
+
     @OptIn(FlowPreview::class)
     val filterProducts = searchText
         .debounce(300)
-        .map { query ->
+        .map{query->
             if (query.isEmpty()) _allProducts.value
-            else _allProducts.value.filter { product ->
-                product.title.contains(query, ignoreCase = true)
-            }
+            else _allProducts.value.filter { it.title.contains(query, ignoreCase = true) }
         }
-        .stateIn(viewModelScope,SharingStarted.Lazily,emptyList())
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
 
 
     init {
@@ -72,8 +75,7 @@ class ProductViewModel @Inject constructor(
                     }
 
                     is ApiResponse.Success -> {
-                        savedStateHandle["productModal"] =
-                            ProductUiState.Success(data = response.data)
+                        savedStateHandle["productModal"] = ProductUiState.Success(data = response.data)
                         _allProducts.value = response.data?.products ?: emptyList()
                     }
                 }
@@ -82,7 +84,9 @@ class ProductViewModel @Inject constructor(
     }
 
     fun updateSearchText(text: String) {
-        _searchText.value = text
+        if (_searchText.value != text) {
+            _searchText.value = text
+        }
     }
 
 }
