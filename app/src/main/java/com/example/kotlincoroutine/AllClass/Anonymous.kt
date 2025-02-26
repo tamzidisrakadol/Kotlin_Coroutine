@@ -17,11 +17,9 @@ open class Animal{
 fun main() {
 
     val dog = object : Animal(){
-
         override fun makeSound() {
             super.makeSound()
         }
-
     }
 
 
@@ -34,9 +32,7 @@ fun main() {
         override fun onLost(error: Exception) {
             TODO("Not yet implemented")
         }
-
     }
 
     anonymousClass.onReceive("")
-
 }
